@@ -9,7 +9,7 @@ import Servant
 
 import qualified Network.Wai.Handler.Warp as Warp
 
-data Hello = Hello Text deriving (Generic)
+data Hello = Hello !Text deriving (Generic)
 instance FromJSON Hello
 instance ToJSON Hello
 

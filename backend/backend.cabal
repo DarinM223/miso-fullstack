@@ -64,6 +64,7 @@ executable backend
   -- other-extensions:
   build-depends:       base >=4.10 && <5
                      , aeson
+                     , common
                      , servant
                      , servant-server
                      , text
