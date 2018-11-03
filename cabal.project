@@ -1,0 +1,7 @@
+packages:
+    frontend/
+    backend/
+    common/
+
+package miso
+    flags: jsaddle
