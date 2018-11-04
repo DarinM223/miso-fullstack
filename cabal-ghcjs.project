@@ -1,0 +1,8 @@
+compiler: ghcjs
+
+packages:
+    common/
+    frontend/
+
+package frontend
+    flags: ghcjs

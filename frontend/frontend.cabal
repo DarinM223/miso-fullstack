@@ -15,6 +15,10 @@ maintainer:          darinm223@gmail.com
 build-type:          Simple
 extra-source-files:  CHANGELOG.md
 
+flag ghcjs
+    description: Tell cabal we are using ghcjs (work around until hackage supports impl(ghcjs))
+    default: False
+
 common exts
   default-extensions: BangPatterns
                     , ConstraintKinds
@@ -65,11 +69,12 @@ executable frontend
   build-depends:       base >=4.10 && <5
                      , common
                      , ghcjs-dom
-                     , http-client
-                     , http-proxy
                      , jsaddle-warp
                      , miso
                      , text
+  if !flag(ghcjs)
+      build-depends:   http-client
+                     , http-proxy
                      , wai
                      , warp
                      , websockets
