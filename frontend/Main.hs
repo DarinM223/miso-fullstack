@@ -80,7 +80,6 @@ getHello name = do
         readyState <- Http.getReadyState xhttp
         when (readyState == 4) $ do
           resp <- fromJust <$> Http.getResponseText xhttp
-          {-resp <- Http.getResponse xhttp >>= valToJSON-}
           liftIO $ putMVar var resp
           freeCallback
   Http.open xhttp ("GET" :: Text)
