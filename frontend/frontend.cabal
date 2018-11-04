@@ -64,6 +64,7 @@ executable frontend
   -- other-extensions:
   build-depends:       base >=4.10 && <5
                      , common
+                     , ghcjs-dom
                      , http-client
                      , http-proxy
                      , jsaddle-warp
