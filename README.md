@@ -9,6 +9,8 @@ is on a different localhost port. The solution is to proxy the HTTP requests fro
 
 ## Building
 
+Requirements: Nix, Ghcid
+
 First start reflex-platform on two extra shells (preferably created in tmux) using this command:
 
 ```
@@ -29,3 +31,11 @@ sh start-frontend.sh
 
 To test that the frontend is successfully querying the backend, go to `localhost:3003/api/hello/world`.
 You should see the response `"Hello world"`.
+
+To build to GHCJS, run this in a try-reflex shell:
+
+```
+sh build-ghcjs.sh
+```
+
+The generated jsexe folder should be somewhere in the `dist-ghcjs` folder.
