@@ -9,17 +9,22 @@ import Servant
 
 import qualified Network.Wai.Handler.Warp as Warp
 
-data Hello = Hello !Text deriving (Generic)
+newtype Hello = Hello Text deriving (Generic)
 instance FromJSON Hello
 instance ToJSON Hello
 
-type API = "api" :> "hello" :> Capture "name" Text :> Get '[JSON] Hello
+type API
+  =    "api" :> "hello" :> Get '[JSON] Hello
+  :<|> "api" :> "hello" :> Capture "name" Text :> Get '[JSON] Hello
 
 api :: Proxy API
 api = Proxy
 
 server :: Server API
-server = handleHello
+server = handleEmptyHello :<|> handleHello
+
+handleEmptyHello :: Handler Hello
+handleEmptyHello = return $ Hello "Hello"
 
 handleHello :: Text -> Handler Hello
 handleHello = return . Hello . ("Hello " <>)

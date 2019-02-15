@@ -17,33 +17,36 @@ import qualified Language.Javascript.JSaddle.Warp as JSaddle
 
 #ifdef ghcjs_HOST_OS
 
-run :: Int -> JSM () -> IO ()
-run = JSaddle.run
+run :: Int -> Int -> Text -> JSM () -> IO ()
+run _ port _ f = JSaddle.run port f
 
 #else
 
 import Network.HTTP.Client (defaultManagerSettings, newManager)
 import Network.HTTP.Proxy
 import Network.WebSockets (defaultConnectionOptions)
+import qualified Data.ByteString.Char8 as C
 import qualified Network.Wai as Wai
 import qualified Network.Wai.Handler.Warp as Warp
 
-run :: Int -> JSM () -> IO ()
-run port f = do
+run :: Int -> Int -> Text -> JSM () -> IO ()
+run serverPort proxyPort prefix f = do
   proxyApp <- httpProxyApp proxySettings <$> newManager defaultManagerSettings
   let app req sendResp = case Wai.pathInfo req of
-        ("api":_) -> proxyApp req sendResp
-        _         -> JSaddle.jsaddleApp req sendResp
+        (p:_) | p == prefix -> proxyApp req sendResp
+        _                   -> JSaddle.jsaddleApp req sendResp
   JSaddle.jsaddleOr defaultConnectionOptions (f >> syncPoint) app
     >>= Warp.runSettings settings
  where
-  settings = Warp.setPort port . Warp.setTimeout 3600 $ Warp.defaultSettings
+  settings = Warp.setPort proxyPort
+           . Warp.setTimeout 3600
+           $ Warp.defaultSettings
   proxySettings = defaultProxySettings
-    { proxyPort            = 3003
+    { proxyPort            = proxyPort
     , proxyRequestModifier = rewrite
     }
-  rewrite req = return $ Right req
-    { requestPath = "http://localhost:3002" <> requestPath req }
+  path req = "http://localhost:" <> C.pack (show serverPort) <> requestPath req
+  rewrite req = return $ Right req { requestPath = path req }
 
 #endif
 
@@ -91,7 +94,7 @@ getHello name = do
   liftIO $ takeMVar var
 
 main :: IO ()
-main = run 3003 $ startApp App
+main = run 3002 3003 "api" $ startApp App
   { model         = Model { _helloName = "", _helloText = "" }
   , initialAction = NoOp
   , update        = updateModel
