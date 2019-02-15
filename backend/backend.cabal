@@ -65,6 +65,8 @@ executable backend
   build-depends:       base >=4.10 && <5
                      , aeson
                      , common
+                     , directory
+                     , filepath
                      , servant
                      , servant-server
                      , text

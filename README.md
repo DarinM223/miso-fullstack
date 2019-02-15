@@ -29,7 +29,8 @@ and in the other run:
 sh start-frontend.sh
 ```
 
-To test that the frontend is successfully querying the backend, go to `localhost:3003/api/hello/world`.
+To test that the frontend is successfully querying the backend, go to `localhost:3003` and
+type in "world" into the text box and press the "Fetch hello" button.
 You should see the response `"Hello world"`.
 
 To build to GHCJS, run this in a try-reflex shell:
@@ -39,3 +40,6 @@ sh build-ghcjs.sh
 ```
 
 The generated jsexe folder should be somewhere in the `dist-ghcjs` folder.
+
+To test that the GHCJS frontend is successfully querying the backend, go to `localhost:3002/index.html`
+and type in "world" into the text box and press "Fetch hello".
