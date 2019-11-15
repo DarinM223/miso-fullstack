@@ -27,16 +27,12 @@ import Network.HTTP.Client (defaultManagerSettings, newManager)
 import Network.HTTP.Proxy
 import Network.WebSockets (defaultConnectionOptions)
 import qualified Data.ByteString.Char8 as C
-import qualified Network.Wai as Wai
 import qualified Network.Wai.Handler.Warp as Warp
 
-run :: Int -> Int -> Text -> JSM () -> IO ()
-run serverPort proxyPort prefix f = do
+run :: Int -> Int -> JSM () -> IO ()
+run serverPort proxyPort f = do
   proxyApp <- httpProxyApp proxySettings <$> newManager defaultManagerSettings
-  let app req sendResp = case Wai.pathInfo req of
-        (p:_) | p == prefix -> proxyApp req sendResp
-        _                   -> JSaddle.jsaddleApp req sendResp
-  JSaddle.jsaddleOr defaultConnectionOptions (f >> syncPoint) app
+  JSaddle.jsaddleWithAppOr defaultConnectionOptions (f >> syncPoint) proxyApp
     >>= Warp.runSettings settings
  where
   settings = Warp.setPort proxyPort
@@ -95,7 +91,7 @@ getHello name = do
   liftIO $ takeMVar var
 
 main :: IO ()
-main = run 3002 3003 "api" $ startApp App
+main = run 3002 3003 $ startApp App
   { model         = Model { _helloName = "", _helloText = "" }
   , initialAction = NoOp
   , update        = updateModel
