@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeOperators #-}
-
 module Main where
 
 import Control.Monad (void)
@@ -25,14 +25,20 @@ type API
   :<|> "api" :> "hello" :> Capture "name" Text :> Get '[JSON] Hello
   :<|> Raw
 
-api :: Proxy API
-api = Proxy
-
 server :: Server API
 server = handleEmptyHello :<|> handleHello :<|> serveDirectoryWebApp staticPath
  where
   staticPath = ".." </> ghcjsFolder
     "dist-ghcjs" "x86_64-linux" "8.4.0.1" "0.1.0.0"
+
+handleEmptyHello :: Handler Hello
+handleEmptyHello = return $ Hello "Hello"
+
+handleHello :: Text -> Handler Hello
+handleHello = return . Hello . ("Hello " <>)
+
+app :: Application
+app = serve (Proxy @API) server
 
 ghcjsFolder :: String -- ^ GHCJS output folder
             -> String -- ^ Instruction set/Operating system
@@ -51,15 +57,6 @@ ghcjsFolder outputFolder os ghcjsVersion projectVersion
   </> "frontend"
   </> "frontend"
   <.> "jsexe"
-
-handleEmptyHello :: Handler Hello
-handleEmptyHello = return $ Hello "Hello"
-
-handleHello :: Text -> Handler Hello
-handleHello = return . Hello . ("Hello " <>)
-
-app :: Application
-app = serve api server
 
 main :: IO ()
 main = do

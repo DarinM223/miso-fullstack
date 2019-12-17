@@ -1,1 +1,1 @@
-cabal --project-file=cabal-ghcjs.project --builddir=dist-ghcjs new-build all --allow-newer
+cabal --project-file=cabal-ghcjs.project --builddir=dist-ghcjs new-build all

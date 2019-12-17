@@ -28,7 +28,7 @@ executable backend
                      , servant-server
                      , text
                      , warp
-  ghc-options: -W
+  ghc-options: -Wall
                -Wcompat
                -Wincomplete-record-updates
                -Wincomplete-uni-patterns
